@@ -9,7 +9,7 @@ defmodule GithubUserSearch.UsersAPI do
     Application.get_env(
       :github_user_search,
       :users_api_client_module,
-      GithubUserSearch.ExternalUsersAPI
+      GithubUserSearch.UserAPI
     )
   end
 end
