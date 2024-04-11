@@ -1,11 +1,12 @@
-defmodule GithubUserSearchWeb.SearchLive do
+defmodule GithubUserSearchWeb.SearchLive.Index do
   use GithubUserSearchWeb, :live_view
   alias GithubUserSearch.UserApi
   alias GithubUserSearchWeb.SearchLive.Components
 
   @moduledoc false
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+    IO.inspect(params, label: "xxxx")
     user = UserApi.dummy_data()
     form = to_form(%{"username" => ""})
     {:ok, assign(socket, user: user, form: form)}
