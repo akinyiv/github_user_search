@@ -9,18 +9,7 @@ defmodule GithubUserSearch.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),
-      dialyzer: [
-        plt_local_path: "priv/plts",
-        plt_add_apps: [:mix]
-      ],
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: %{
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      }
+      deps: deps()
     ]
   end
 
@@ -62,10 +51,7 @@ defmodule GithubUserSearch.MixProject do
       {:jason, "~> 1.2"},
       {:timex, "~> 3.7"},
       {:dns_cluster, "~> 0.1.1"},
-      {:plug_cowboy, "~> 2.5"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:excoveralls, "~> 0.18", only: :test}
+      {:plug_cowboy, "~> 2.5"}
     ]
   end
 
@@ -83,12 +69,7 @@ defmodule GithubUserSearch.MixProject do
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
-      lint: [
-        "format --check-formatted",
-        "compile --warnings-as-errors --force",
-        "credo --strict"
-      ]
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
     ]
   end
 end

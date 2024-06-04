@@ -28,15 +28,15 @@ function initDarkMode() {
     
 }
   
-window.addEventListener("toogle-darkmode", e => {
-    if (darkExpected())
-        localStorage.theme = 'light';
-    else
-        localStorage.theme = 'dark';
-        initDarkMode();
-})
-
-initDarkMode();
+window.addEventListener("toggle-theme", () => {
+    if (localStorage.theme === "dark") {
+      localStorage.theme = "light";
+      document.documentElement.classList.remove("dark");
+    } else {
+      localStorage.theme = "dark";
+      document.documentElement.classList.add("dark");
+    }
+  });
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
