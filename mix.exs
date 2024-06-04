@@ -9,18 +9,7 @@ defmodule GithubUserSearch.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),
-      dialyzer: [
-        plt_local_path: "priv/plts",
-        plt_add_apps: [:mix]
-      ],
-      test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: %{
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      }
+      deps: deps()
     ]
   end
 
@@ -60,11 +49,9 @@ defmodule GithubUserSearch.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
+      {:timex, "~> 3.7"},
       {:dns_cluster, "~> 0.1.1"},
-      {:plug_cowboy, "~> 2.5"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:excoveralls, "~> 0.18", only: :test}
+      {:plug_cowboy, "~> 2.5"}
     ]
   end
 
