@@ -15,7 +15,7 @@ defmodule GithubUserSearch.Application do
       {Phoenix.PubSub, name: GithubUserSearch.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: GithubUserSearch.Finch},
-      {Finch, name: GithubUserSearch.UserAPI},
+      {Finch, name: GithubUserSearch.Http},
 
       # Start a worker by calling: GithubUserSearch.Worker.start_link(arg)
       # {GithubUserSearch.Worker, arg},

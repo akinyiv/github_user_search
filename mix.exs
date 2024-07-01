@@ -51,6 +51,7 @@ defmodule GithubUserSearch.MixProject do
       {:jason, "~> 1.2"},
       {:timex, "~> 3.7"},
       {:dns_cluster, "~> 0.1.1"},
+      {:mox, "~> 1.1", only: :test},
       {:plug_cowboy, "~> 2.5"}
     ]
   end
