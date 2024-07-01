@@ -1,15 +1,14 @@
-defmodule GithubUserSearch.UserAPI do
+defmodule GithubUserSearch.Http do
   @moduledoc """
-  An implementation of a GithubUserSearch.UserAPIBehaviour
+  An implementation of a GithubUserSearch.HttpBehaviour
   """
   require Logger
 
-  @behaviour GithubUserSearch.UsersAPI
+  @behaviour GithubUserSearch.Client
 
   @base_url "https://api.github.com/users/"
 
-  @impl GithubUserSearch.UsersAPI
-
+  @impl GithubUserSearch.Client
   def fetch_user(username) do
     username
     |> request_profile
@@ -28,6 +27,16 @@ defmodule GithubUserSearch.UserAPI do
     {:ok, response}
   end
 
+  defp handle_response({:ok, %Finch.Response{status: 403, body: body}}) do
+    Logger.error("API rate limit exceeded: #{body}")
+    {:error, "API rate limit exceeded"}
+  end
+
+  defp handle_response({:ok, %Finch.Response{body: body, status: status}}) do
+    Logger.error("Github API error: #{inspect(body)} #{status}")
+    {:error, "Github API error"}
+  end
+
   defp handle_response({:ok, %Finch.Response{status: 404}}) do
     {:ok, "Not Found"}
   end
@@ -36,9 +45,4 @@ defmodule GithubUserSearch.UserAPI do
     Logger.error(reason)
     {:error, reason}
   end
-
-  # defp handle_response(:ok, %Finch.Response{body: body, status: status}) do
-  #   Logger.error("Github API error: #{inspect(body)} #{status}")
-  #   {:error, "Github API error"}
-  # end
 end

@@ -1,11 +1,12 @@
 defmodule GithubUserSearchWeb.SearchLive.Index do
   use GithubUserSearchWeb, :live_view
-  alias GithubUserSearch.UsersAPI
+  alias GithubUserSearch.Client
   alias GithubUserSearch.Username
   alias GithubUserSearchWeb.SearchLive.Components
 
   @moduledoc false
 
+  @impl true
   def render(assigns) do
     ~H"""
     <div class="flex justify-between items-center mb-8">
@@ -23,59 +24,56 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
           class="uppercase font-bold tracking-widest hidden dark:flex dark:hover:text-[#90A4D4] dark:gap-2 dark:items-center"
           phx-click={JS.dispatch("toggle-theme")}
         >
-          <span>Light</span>
+          <span class="dark:text-[#fff]">Light</span>
           <Components.sun_icon />
         </button>
       </div>
     </div>
 
-    <.form
-      for={@form}
-      id="devfinder-form"
-      phx-change="validate"
-      phx-submit="search"
-      class="py-2 px-3 max-w-2xl bg-white dark:bg-[#1E2A47] rounded-xl form-grid "
-    >
-      <Components.search_icon class="search-icon" />
-      <.input
-        field={@form[:username]}
-        type="text"
-        placeholder="Search Github username.."
-        class="search-input border-none"
-      />
+    <div class="bg-[#FEFEFE] dark:bg-[#1E2A47] rounded-lg mb-4">
+      <.form
+        for={@form}
+        class="flex items-center justify-between w-full p-2 "
+        phx-change="validate"
+        phx-submit="search_dev"
+        id="search_form"
+      >
+        <Components.search_icon class="" />
+        <.input
+          field={@form[:username]}
+          phx-debounce="blur"
+          placeholder="Search GitHub username..."
+          class="w-full border-none bg-[#FEFEFE] dark:bg-[#1E2A47]
+          placeholder:text-[#4B6A9B] dark:placeholder:text-[#FFFFFF]"
+        />
 
-      <div class="relative">
-        <p
-          :if={@show_errors}
-          class="mr-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden absolute right-[100%] bottom-[5%]"
-        >
-          <%= @error %>
-        </p>
-        <.button phx-disable-with="..." class="bg-[#0079ff] text-white px-1 search-btn">
-          Search
-        </.button>
-      </div>
-    </.form>
+        <.button class="">search</.button>
+      </.form>
+    </div>
 
-    <div class="mt-8 px-8 py-6 max-w-2xl rounded-xl bg-white dark:bg-[#1E2A47] profile-grid">
-      <img
-        src={@dev_info["avatar_url"]}
-        alt={@dev_info["name"]}
-        class="h-16 w-16 rounded-full mr-2 profile-logo"
-      />
+    <div class="mt-3 px-8 py-6 max-w-2xl rounded-xl bg-white dark:bg-[#1E2A47]">
+      <div class="flex p-2">
+        <img
+          src={@dev_info["avatar_url"]}
+          alt={@dev_info["name"]}
+          class="h-16 w-16 rounded-full mr-2 profile-logo"
+        />
+        <div>
+          <h2 class="font-bold text-[#2b3442] dark:text-white text-lg tracking-wider profile-name">
+            <%= @dev_info["name"] %>
+          </h2>
+          <.link href={@dev_info["html_url"]} class="text-[#0079ff] hover:opacity-75 profile-link">
+            @<%= @dev_info["login"] %>
+          </.link>
+          <p class="tracking-wider dark:text-[#fff]"><%= @dev_info["bio"] %></p>
 
-      <div class="profile-header p-2">
-        <h2 class="font-bold text-[#2b3442] dark:text-white text-lg tracking-wider profile-name">
-          <%= @dev_info["name"] %>
-        </h2>
-        <.link href={@dev_info["html_url"]} class="text-[#0079ff] hover:opacity-75 profile-link">
-          @<%= @dev_info["login"] %>
-        </.link>
-        <p class="profile-date">Joined <%= process_date(@dev_info["created_at"]) %></p>
-        <p class="tracking-wider profile-bio"><%= @dev_info["bio"] %></p>
+          <div justify-end>
+            <p class="dark:text-[#fff]">Joined <%= process_date(@dev_info["created_at"]) %></p>
+          </div>
+        </div>
       </div>
 
-      <div class="p-4 mt-2 rounded-md bg-[#f6f8ff] dark:bg-[#141D2F] flex gap-20 profile-stats">
+      <div class="p-4 mt-2 rounded-md bg-[#f6f8ff] dark:bg-[#141D2F] flex gap-20 profile-stats dark:text-[#fff]">
         <p class="flex flex-col">
           <span class="text-sm dark:opacity-80 mb-3"> Repos </span>
           <span class="text-[#2b3442] dark:text-[#fff] font-bold">
@@ -92,7 +90,7 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
         </p>
       </div>
 
-      <div class="p-4 mt-2 columns-2 profile-contact">
+      <div class="p-4 mt-2 columns-2 dark:text-[#fff]">
         <div class={["flex gap-2 items-center mb-3", @dev_info["location"] == "" && "opacity-50"]}>
           <Components.location_icon />
           <p>
@@ -126,6 +124,7 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
     """
   end
 
+  @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
@@ -137,6 +136,7 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
      |> assign_form()}
   end
 
+  @impl true
   def handle_event("validate", %{"username" => username_params}, socket) do
     %{assigns: %{username: username}} = socket
 
@@ -151,7 +151,8 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
      |> assign(:show_errors, false)}
   end
 
-  def handle_event("search", %{"username" => %{"username" => username}}, socket) do
+  @impl true
+  def handle_event("search_dev", %{"username" => %{"username" => username}}, socket) do
     {
       :noreply,
       socket
@@ -160,11 +161,12 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
   end
 
   defp assign_dev_info(socket, dev_name) do
-    case UsersAPI.fetch_user(dev_name) do
+    case Client.fetch_user(dev_name) do
       {:ok, "Not found"} ->
         socket
         |> assign(:error, "Not found")
         |> assign(:show_errors, true)
+        |> assign(:dev_info, %{})
 
       {:ok, dev_info} ->
         socket
@@ -176,6 +178,7 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
         socket
         |> assign(:error, "Something went wrong")
         |> assign(:show_errors, true)
+        |> assign(:dev_info, %{})
     end
   end
 
@@ -189,6 +192,8 @@ defmodule GithubUserSearchWeb.SearchLive.Index do
 
     assign(socket, :form, form)
   end
+
+  defp process_date(nil), do: "Date not available"
 
   defp process_date(date) do
     [date, _time] = String.split(date, "T")
